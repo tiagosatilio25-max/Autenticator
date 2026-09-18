@@ -43,6 +43,62 @@ export async function cadastrar(req, res){
         return res.status(500).json({ mensagem: "Erro ao cadastrar usuário"});
     }
 
-    
-}
+    export async function login(req, res){
+        try{
+            const { usuario, senha} = req.body;
+            
+            if (!usuario || !senha) {
+                return res.status(400).json({ mensagem: "Usuário e senha são obrigatórios"});
 
+            }
+
+            const [usuarios] = await pool.query(
+                "SELECT id, usuario, senha FROM usuarios WHERE usuario = ? LIMIT 1",
+                [usuario]
+            );
+
+            if (usuarios.length ===0){
+                return res.status(401).json({ mensagem: "Usuário ou senha inválidos"});
+            }
+
+            const encontrado = usuario[0];
+            const senhaValida = await bcrypt.compare(senha, encontrado.senha);
+
+            if (!senhaValida){
+                return res.status(401).json({ mensagem: "Usuário ou senha inválidos"});
+            }
+
+            const token = jwt.sign(
+                { id: encontrado.id, usuario: encontrado.usuario},
+                process.env.JW_SECRET,
+                { expiresIn: "2h"}
+            );
+
+            return res.json({
+                mensagem: "Login realizado com sucesso",
+                usuario: {id: encontrado.id, usuario: encontrado.usuario},
+                token
+            });
+
+        } catch (erro) {
+            console.error(erro);
+            return res.status(500).json({ mensagem: "Erro no login"});
+        }
+    }
+
+    export async function me(req, res) {
+        return res.json({ usuario: req.usuario});
+    }
+
+    export async function listarUsuarios(req, res){
+        try{
+            const [ usuarios] = await pool.query(
+                "SELECT id, usuario, criando_em FROM usuarios ORDER BY id"
+            );
+            return res.json(usuario);
+        } catch (erro) {
+            console.error(erro);
+            return res.status(500).json({ mensagem: "Erro ao listar usuários"});
+        }  
+    }
+}
