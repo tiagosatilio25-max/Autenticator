@@ -1,4 +1,4 @@
-import { Router } from " express";
+import { Router } from "express";
 import {
     cadastrar,
     login,
@@ -11,7 +11,7 @@ const router = Router();
 
 router.post("/usuarios", cadastrar);
 router.post("/login", login);
-outerHeight.get("/auth/me", autenticar, me);
+router.get("/auth/me", autenticar, me);
 router.get("/usuarios", autenticar, listarUsuarios);
 
 export default router;
