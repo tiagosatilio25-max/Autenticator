@@ -1,17 +1,18 @@
 import { Router } from "express";
 import {
     cadastrar,
-    login,
+    login, 
     me,
     listarUsuarios
-} from "../controllers/authController.js";
-import { autenticar } from "../middlewares/authMiddleware.js";
+}from "../controllers/authController.js";
+import {autenticar} from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
 router.post("/usuarios", cadastrar);
-router.post("/login", login);
+router.post("/login" , login);
 router.get("/auth/me", autenticar, me);
-router.get("/usuarios", autenticar, listarUsuarios);
+router.get("/usuarios" , autenticar, listarUsuarios);
 
 export default router;
+// vgwsv

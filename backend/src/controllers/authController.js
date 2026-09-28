@@ -1,21 +1,17 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { pool } from "../config/db.js";
+import { pool } from "../config/db.js"
 
 export async function cadastrar(req, res) {
   try {
     const { usuario, senha } = req.body;
 
     if (!usuario || !senha) {
-      return res
-        .status(400)
-        .json({ mensagem: "Usuário e senha são obrigatórios" });
+      return res.status(400).json({ mensagem: "Usuário e senha são obrigatórios" });
     }
 
     if (senha.length < 4) {
-      return res
-        .status(400)
-        .json({ mensagem: "A senha deve ter pelo menos 4 caracteres" });
+      return res.status(400).json({ mensagem: "A senha deve ter pelo menos 4 caracteres" });
     }
 
     const [existentes] = await pool.query(
@@ -45,14 +41,13 @@ export async function cadastrar(req, res) {
   }
 }
 
+
 export async function login(req, res) {
   try {
     const { usuario, senha } = req.body;
 
     if (!usuario || !senha) {
-      return res
-        .status(400)
-        .json({ mensagem: "Usuário e senha são obrigatórios" });
+      return res.status(400).json({ mensagem: "Usuário e senha são obrigatórios" });
     }
 
     const [usuarios] = await pool.query(
@@ -85,22 +80,23 @@ export async function login(req, res) {
 
   } catch (erro) {
     console.error(erro);
-    return res.status(500).json({ mensagem: "Erro no login" });
+    return res.status.json(500)({mensagem: "Erro no login"});
   }
 }
 
-export async function me(req, res) {
-  return res.json({ usuario: req.usuario });
+export async function me(req , res ) {
+    return res.json ({usuario : req.usuario});
 }
+    
+    export async function listarUsuarios(req, res ) {
+        try {
+            const [usuarios] = await pool.query(
+                "SELECT id usuario, criado_em FROM usuarios ORDER BY id"
+            );
+            return res.json(usuarios);
+        }catch(erro){
+            console.error (erro);
+            return res.status(500).json({mensagem : "Erro ao listar usuários" });
 
-export async function listarUsuarios(req, res) {
-  try {
-    const [usuarios] = await pool.query(
-      "SELECT id, usuario, criado_em FROM usuarios ORDER BY id"
-    );
-    return res.json(usuarios);
-  } catch (erro) {
-    console.error(erro);
-    return res.status(500).json({ mensagem: "Erro ao listar usuários" });
-  }
-}
+        }
+    }
